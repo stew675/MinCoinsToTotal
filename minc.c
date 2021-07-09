@@ -10,15 +10,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-// #define COUNT_COMPARES
+//#define COUNT_COMPARES
 
 #ifdef COUNT_COMPARES
 static uint32_t compares = 0;
-#define BUMP_COMPARES (compares++)
+#define INC_COMPARES (compares++)
 #define RESET_COMPARES (compares = 0)
 #define PRINT_COMPARES printf("Solution took %u compares\n", compares)
 #else
-#define BUMP_COMPARES (0)
+#define INC_COMPARES (0)
 #define RESET_COMPARES (0)
 #define PRINT_COMPARES (0)
 #endif
@@ -32,16 +32,14 @@ min_coins_to_total(uint32_t coins[], uint32_t n_coins, uint32_t target)
 
 	if ((totals == NULL) || (queue == NULL)) {
 		fprintf(stderr, "Line %d in %s:%s(): Out of memory\n", __LINE__, __FILE__, __func__);
-		totals ? free(totals) : 0;
-		queue ? free(queue) : 0;
-		return;
+		goto cleanup;
 	}
 
 	RESET_COMPARES;
 
-	for (uint32_t qpt, queue_pos = 0, queue_max = 1; queue_pos < queue_max; queue_pos++) {
+	for (uint32_t queue_pos = 0, queue_max = 1; queue_pos < queue_max; queue_pos++) {
 		for (uint32_t total, qpt = queue[queue_pos], c = 0; c < n_coins; c++) {
-			BUMP_COMPARES;
+			INC_COMPARES;
 			if ((total = qpt + coins[c]) <= target) {
 				if (totals[total] == 0) {
 					totals[total] = coins[c];
@@ -64,8 +62,9 @@ min_coins_to_total(uint32_t coins[], uint32_t n_coins, uint32_t target)
 
 	PRINT_COMPARES;
 
-	free(totals);
-	free(queue);
+cleanup:
+	totals ? free(totals) : 0;
+	queue ? free(queue) : 0;
 } // min_coins_to_total
 
 

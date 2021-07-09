@@ -10,9 +10,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define DEBUG
+// #define COUNT_COMPARES
 
-#ifdef DEBUG
+#ifdef COUNT_COMPARES
 static uint32_t compares = 0;
 #define BUMP_COMPARES (compares++)
 #define RESET_COMPARES (compares = 0)
@@ -30,14 +30,10 @@ min_coins_to_total(uint32_t coins[], uint32_t n_coins, uint32_t target)
 	uint32_t *totals = calloc(target + 1, sizeof(*totals));
 	uint32_t *queue = calloc(target + 1, sizeof(*queue));
 
-	if (totals == NULL) {
+	if ((totals == NULL) || (queue == NULL)) {
 		fprintf(stderr, "Line %d in %s:%s(): Out of memory\n", __LINE__, __FILE__, __func__);
-		return;
-	}
-
-	if (queue == NULL) {
-		free(totals);
-		fprintf(stderr, "Line %d in %s:%s(): Out of memory\n", __LINE__, __FILE__, __func__);
+		totals ? free(totals) : 0;
+		queue ? free(queue) : 0;
 		return;
 	}
 
